@@ -2,3 +2,5 @@ arm_64bit=1
 armstub=RPI_EFI.fd
 boot_delay=0
 enable_uart=1
+hdmi_force_hotplug=1
+hdmi_safe=1
