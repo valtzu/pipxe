@@ -1,3 +1,5 @@
+## Obsolete instructions below
+
 piPXE - iPXE for the Raspberry Pi
 =================================
 
