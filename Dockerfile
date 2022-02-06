@@ -32,4 +32,4 @@ RUN mkdir -p /opt/build
 RUN ln -sf /bin/bash /bin/sh
 
 WORKDIR /opt/build
-CMD ["make"]
+CMD ["make", "-j8"]
