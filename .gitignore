@@ -1,3 +1,4 @@
 Build/
 firmware/
 pxe*
+.env
