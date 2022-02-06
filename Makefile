@@ -5,12 +5,12 @@ EFI_ARCH	:= AARCH64
 EFI_TOOLCHAIN	:= GCC5
 EFI_TIMEOUT	:= 3
 EFI_FLAGS	:= --pcd=PcdPlatformBootTimeOut=$(EFI_TIMEOUT)
-EFI_DSC		:= edk2-platforms/Platform/RaspberryPi/RPi3/RPi3.dsc
-EFI_FD		:= Build/RPi3/$(EFI_BUILD)_$(EFI_TOOLCHAIN)/FV/RPI_EFI.fd
+EFI_DSC		:= edk2-platforms/Platform/RaspberryPi/RPi4/RPi4.dsc
+EFI_FD		:= Build/RPi4/$(EFI_BUILD)_$(EFI_TOOLCHAIN)/FV/RPI_EFI.fd
 
 IPXE_CROSS	:= aarch64-linux-gnu-
 IPXE_SRC	:= ipxe/src
-IPXE_TGT	:= bin-arm64-efi/rpi.efi
+IPXE_TGT	:= bin-arm64-efi/snp.efi
 IPXE_EFI	:= $(IPXE_SRC)/$(IPXE_TGT)
 
 SDCARD_MB	:= 32
@@ -20,6 +20,10 @@ all : sdcard sdcard.img sdcard.zip
 
 submodules :
 	git submodule update --init --recursive
+
+disable-ram-limit : submodules
+	sed 's/gRaspberryPiTokenSpaceGuid.PcdRamLimitTo3GB|L"RamLimitTo3GB"|gConfigDxeFormSetGuid|0x0|1/gRaspberryPiTokenSpaceGuid.PcdRamLimitTo3GB|L"RamLimitTo3GB"|gConfigDxeFormSetGuid|0x0|0/' -i $(EFI_DSC)
+	sed 's/gRaspberryPiTokenSpaceGuid.PcdRamMoreThan3GB|L"RamMoreThan3GB"|gConfigDxeFormSetGuid|0x0|0/gRaspberryPiTokenSpaceGuid.PcdRamMoreThan3GB|L"RamMoreThan3GB"|gConfigDxeFormSetGuid|0x0|1/' -i $(EFI_DSC)
 
 firmware :
 	if [ ! -e firmware ] ; then \
@@ -69,7 +73,7 @@ update:
 tag :
 	git tag v`git show -s --format='%ad' --date=short | tr -d -`
 
-.PHONY : submodules firmware efi efi-basetools $(EFI_FD) ipxe $(IPXE_EFI) \
+.PHONY : submodules disable-ram-limit firmware efi efi-basetools $(EFI_FD) ipxe $(IPXE_EFI) \
 	 sdcard sdcard.img
 
 clean :
