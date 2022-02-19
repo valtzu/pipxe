@@ -1,57 +1,29 @@
-## Obsolete instructions below
-
-piPXE - iPXE for the Raspberry Pi
+PXE-chainloadable iPXE for the Raspberry Pi 4
 =================================
 
-[![Build Status](https://travis-ci.org/ipxe/pipxe.svg?branch=master)](https://travis-ci.org/ipxe/pipxe)
-
-piPXE is a build of the [iPXE] network boot firmware for the
-[Raspberry Pi].
+piPXE is a build of the [iPXE] network boot firmware for the [Raspberry Pi].
 
 Quick start
 -----------
 
-1. Download [sdcard.img] and write it onto any blank micro SD card
-using a tool such as `dd` or [Etcher].
-
-2. Insert the micro SD card into your Raspberry Pi.
-
-3. Power on your Raspberry Pi.
+1. Bring TFTP/PXE server up – set variables according to your network. You can use .env file for convenience.
+```
+git clone https://github.com/valtzu/pixpe
+cd pixpe/example
+INTERFACE=eth0 SUBNET=192.168.1.0 NETMASK=255.255.255.0 docker-compose up
+```
+2. Power on your Raspberry Pi
 
 Within a few seconds you should see iPXE appear and begin booting from
 the network:
 
-![Screenshot](screenshot.png)
-
-Building from source
---------------------
-
-To build from source, clone this repository and run `make`.  This will
-build all of the required components and eventually generate the SD
-card image [sdcard.img].
-
-You will need various build tools installed, including a
-cross-compiling version of `gcc` for building AArch64 binaries.  See
-the [Dockerfile](Dockerfile) for hints on which packages to install.
-
-How it works
-------------
-
-The SD card image contains:
-
-* Broadcom [VC4 boot firmware]: `bootcode.bin` and related files
-* [TianoCore EDK2] UEFI firmware built for the [RPi3] platform: `RPI_EFI.fd`
-* [iPXE] built for the `arm64-efi` platform: `/efi/boot/bootaa64.efi`
-
-The Raspberry Pi has a somewhat convoluted boot process in which the
-VC4 GPU is responsible for loading the initial executable ARM CPU
-code.  The flow of execution is approximately:
-
-1. The GPU code in the onboard boot ROM loads `bootcode.bin` from the SD card.
-2. The GPU executes `bootcode.bin` and loads `RPI_EFI.fd` from the SD card.
-3. The GPU allows the CPU to start executing `RPI_EFI.fd`.
-4. The CPU executes `RPI_EFI.fd` and loads `bootaa64.efi` from the SD card.
-5. The CPU executes `bootaa64.efi` (i.e. iPXE) to boot from the network.
+Build from source
+-----------
+```
+git clone https://github.com/valtzu/pixpe
+cd pixpe
+docker-compose up 
+```
 
 Licence
 -------
@@ -65,8 +37,7 @@ subproject licensing terms for more details:
 
 [iPXE]: https://ipxe.org
 [Raspberry Pi]: https://www.raspberrypi.org
-[sdcard.img]: https://github.com/ipxe/pipxe/releases/latest/download/sdcard.img
+[pxe.zip]: https://github.com/valtzu/pipxe/releases/latest/download/pxe.zip
 [Etcher]: https://www.balena.io/etcher
 [VC4 boot firmware]: https://github.com/raspberrypi/firmware/tree/master/boot
 [TianoCore EDK2]: https://github.com/tianocore/edk2
-[RPi3]: https://github.com/tianocore/edk2-platforms/tree/master/Platform/RaspberryPi/RPi3
