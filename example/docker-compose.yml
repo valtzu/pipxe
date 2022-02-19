@@ -1,0 +1,25 @@
+version: '3.7'
+services:
+  dnsmasq:
+    image: jpillora/dnsmasq
+    volumes:
+      - ./dnsmasq.conf:/etc/dnsmasq.conf
+      - ./tftpboot:/srv/tftpboot
+    network_mode: host
+    entrypoint: []
+    command: |
+      sh -c "
+        cd /srv/tftpboot
+        if [ ! -f RPI_EFI.fd ] ; then
+          wget --no-check-certificate https://github.com/valtzu/pipxe/releases/latest/download/pxe.zip -O - | unzip -
+          chown -R $$(stat -c '%u' .):$$(stat -c '%g' .) . 
+        fi
+        if [ -z '${INTERFACE}' ] ; then
+          echo 'Usage: INTERFACE=eth0 SUBNET=192.168.1.0 NETMASK=255.255.255.0 docker-compose up'
+          exit 1
+        fi
+        dnsmasq \
+          --no-daemon \
+          --interface=${INTERFACE} \
+          --dhcp-range=${SUBNET:-192.168.1.0},proxy,${NETMASK:-255.255.255.0}
+      "
