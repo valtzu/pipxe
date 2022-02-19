@@ -22,7 +22,7 @@ jobs:
 
       - name: Build everything
         run: |
-          make
+          make -j8
 
       - name: Create release
         id: create_release
