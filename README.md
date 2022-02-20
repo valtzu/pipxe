@@ -12,7 +12,9 @@ git clone https://github.com/valtzu/pixpe
 cd pixpe/example
 INTERFACE=eth0 SUBNET=192.168.1.0 NETMASK=255.255.255.0 docker-compose up
 ```
-2. Power on your Raspberry Pi
+2. Power on your Raspberry Pi 4 with Ethernet cable attached to the same network as your $INTERFACE above
+3. Wait a couple of minutes, it should load images directly from the [images.maas.io] (~500MB or so)
+4. You can now SSH to the machine (get the IP from dnsmasq output for example), username `unsafe`, password `unsafe` 
 
 Within a few seconds you should see iPXE appear and begin booting from
 the network:
@@ -35,6 +37,7 @@ subproject licensing terms for more details:
 * <https://github.com/tianocore/edk2/blob/master/Readme.md>
 * <https://ipxe.org/licensing>
 
+[images.maas.io] http://images.maas.io/ephemeral-v3/
 [iPXE]: https://ipxe.org
 [Raspberry Pi]: https://www.raspberrypi.org
 [tftpboot.zip]: https://github.com/valtzu/pipxe/releases/latest/download/tftpboot.zip
