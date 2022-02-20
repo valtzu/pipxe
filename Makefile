@@ -15,7 +15,7 @@ IPXE_EFI	:= $(IPXE_SRC)/$(IPXE_TGT)
 
 export MTOOLSRC	:= mtoolsrc
 
-all : pxe pxe.zip
+all : pxe tftpboot.zip
 
 submodules :
 	git submodule update --init --recursive
@@ -52,7 +52,7 @@ pxe : firmware efi ipxe
 	cp $(IPXE_EFI) pxe/efi/boot/bootaa64.efi
 	cp ipxe/COPYING* pxe/
 
-pxe.zip : pxe
+tftpboot.zip : pxe
 	$(RM) -f $@
 	( pushd $< ; zip -q -r ../$@ * ; popd )
 
@@ -65,5 +65,5 @@ tag :
 .PHONY : submodules firmware efi efi-basetools $(EFI_FD) ipxe $(IPXE_EFI) pxe
 
 clean :
-	$(RM) -rf firmware Build pxe pxe.zip
+	$(RM) -rf firmware Build pxe tftpboot.zip
 	if [ -d $(IPXE_SRC) ] ; then $(MAKE) -C $(IPXE_SRC) clean ; fi

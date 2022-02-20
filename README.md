@@ -37,7 +37,7 @@ subproject licensing terms for more details:
 
 [iPXE]: https://ipxe.org
 [Raspberry Pi]: https://www.raspberrypi.org
-[pxe.zip]: https://github.com/valtzu/pipxe/releases/latest/download/pxe.zip
+[tftpboot.zip]: https://github.com/valtzu/pipxe/releases/latest/download/tftpboot.zip
 [Etcher]: https://www.balena.io/etcher
 [VC4 boot firmware]: https://github.com/raspberrypi/firmware/tree/master/boot
 [TianoCore EDK2]: https://github.com/tianocore/edk2

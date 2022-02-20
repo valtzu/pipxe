@@ -11,7 +11,7 @@ services:
       sh -c "
         cd /srv/tftpboot
         if [ ! -f RPI_EFI.fd ] ; then
-          wget --no-check-certificate https://github.com/valtzu/pipxe/releases/latest/download/pxe.zip -O - | unzip -
+          wget --no-check-certificate https://github.com/valtzu/pipxe/releases/latest/download/tftpboot.zip -O - | unzip -
           chown -R $$(stat -c '%u' .):$$(stat -c '%g' .) . 
         fi
         if [ -z '${INTERFACE}' ] ; then
