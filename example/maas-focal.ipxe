@@ -3,6 +3,6 @@
 set maas-images http://images.maas.io/ephemeral-v3/stable/focal/arm64/20220118
 
 dhcp
-initrd ${maas-images}/hwe-20.04-edge/boot-initrd
-chain ${maas-images}/hwe-20.04-edge/boot-kernel initrd=boot-initrd root=squash:${maas-images}/squashfs ip=dhcp overlayroot=tmpfs:recurse=0 ds=nocloud-net;s=https://raw.githubusercontent.com/valtzu/pipxe/master/example/cloud-init/
+initrd ${maas-images}/hwe-20.04-edge/generic/boot-initrd
+chain ${maas-images}/hwe-20.04-edge/generic/boot-kernel initrd=boot-initrd root=squash:${maas-images}/squashfs ip=dhcp overlayroot=tmpfs:recurse=0 ds=nocloud-net;s=https://raw.githubusercontent.com/valtzu/pipxe/master/example/cloud-init/
 boot
