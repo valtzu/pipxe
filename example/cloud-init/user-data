@@ -2,3 +2,4 @@
 users:
   - name: unsafe
     plain_text_passwd: unsafe
+    lock_passwd: false
