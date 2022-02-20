@@ -37,7 +37,7 @@ subproject licensing terms for more details:
 * <https://github.com/tianocore/edk2/blob/master/Readme.md>
 * <https://ipxe.org/licensing>
 
-[images.maas.io] http://images.maas.io/ephemeral-v3/
+[images.maas.io]: http://images.maas.io/ephemeral-v3/
 [iPXE]: https://ipxe.org
 [Raspberry Pi]: https://www.raspberrypi.org
 [tftpboot.zip]: https://github.com/valtzu/pipxe/releases/latest/download/tftpboot.zip
