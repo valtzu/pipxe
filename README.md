@@ -16,8 +16,6 @@ INTERFACE=eth0 SUBNET=192.168.1.0 NETMASK=255.255.255.0 docker-compose up
 3. Wait a couple of minutes, it should load images directly from the [images.maas.io] (~500MB or so)
 4. You can now SSH to the machine (get the IP from dnsmasq output for example), username `unsafe`, password `unsafe` 
 
-Within a few seconds you should see iPXE appear and begin booting from
-the network:
 
 Build from source
 -----------
