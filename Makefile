@@ -12,7 +12,7 @@ IPXE_CROSS	:= aarch64-linux-gnu-
 IPXE_SRC	:= ipxe/src
 IPXE_TGT	:= bin-arm64-efi/snp.efi
 IPXE_EFI	:= $(IPXE_SRC)/$(IPXE_TGT)
-IPXE_CONSOLE    := $(IPXE_SRC)/config/local/console.h
+IPXE_CONSOLE    := $(IPXE_SRC)/config/local/rpi/console.h
 
 all : tftpboot.zip
 
@@ -37,7 +37,10 @@ $(EFI_FD) : submodules efi-basetools
 		-p $(EFI_DSC) $(EFI_FLAGS)
 
 $(IPXE_CONSOLE) : submodules
-	echo "#define	CONSOLE_SYSLOG" > $@
+	mkdir -p $$(dirname $@) || true
+	echo "#undef	LOG_LEVEL" > $@
+	echo "#define	LOG_LEVEL LOG_ALL" >> $@
+	echo "#define	CONSOLE_SYSLOG CONSOLE_USAGE_LOG" >> $@
 
 ipxe : $(IPXE_CONSOLE) $(IPXE_EFI)
 

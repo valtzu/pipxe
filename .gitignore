@@ -2,3 +2,4 @@ Build/
 firmware/
 pxe*
 .env
+tftpboot.zip

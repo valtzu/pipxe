@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:21.10
 
 RUN true \
     && apt-get update \
@@ -15,14 +15,10 @@ RUN true \
     git-core \
     iasl \
     make \
-    mtools \
     perl \
     python \
     subversion \
     liblzma-dev \
-    iasl \
-    mtools \
-    subversion \
     lzma-dev \
     uuid-dev \
     zip \
