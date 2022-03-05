@@ -1,20 +1,20 @@
 name: Build
 
-on: push
+on:
+  push:
+    tags:
+      - 'v*'
 
 jobs:
-
   build:
     name: Build
     runs-on: ubuntu-20.04
     steps:
 
       - name: Check out code
-        if: startsWith(github.event.ref, 'refs/tags/v')
         uses: actions/checkout@v2
 
       - name: Install packages
-        if: startsWith(github.event.ref, 'refs/tags/v')
         run: |
           sudo apt update
           sudo apt install -y -o Acquire::Retries=50 \
@@ -23,13 +23,11 @@ jobs:
           sudo ln -sf /bin/bash /bin/sh 
 
       - name: Build everything
-        if: startsWith(github.event.ref, 'refs/tags/v')
         run: |
           make -j8
 
       - name: Create release
         id: create_release
-        if: startsWith(github.event.ref, 'refs/tags/v')
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -38,7 +36,6 @@ jobs:
           release_name: ${{ github.ref }}
 
       - name: Upload (tftpboot.zip)
-        if: startsWith(github.event.ref, 'refs/tags/v')
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
