@@ -12,10 +12,9 @@ IPXE_CROSS	:= aarch64-linux-gnu-
 IPXE_SRC	:= ipxe/src
 IPXE_TGT	:= bin-arm64-efi/snp.efi
 IPXE_EFI	:= $(IPXE_SRC)/$(IPXE_TGT)
+IPXE_CONSOLE    := $(IPXE_SRC)/config/local/console.h
 
-export MTOOLSRC	:= mtoolsrc
-
-all : pxe tftpboot.zip
+all : tftpboot.zip
 
 submodules :
 	git submodule update --init --recursive
@@ -37,7 +36,10 @@ $(EFI_FD) : submodules efi-basetools
 	build -b $(EFI_BUILD) -a $(EFI_ARCH) -t $(EFI_TOOLCHAIN) \
 		-p $(EFI_DSC) $(EFI_FLAGS)
 
-ipxe : $(IPXE_EFI)
+$(IPXE_CONSOLE) : submodules
+	echo "#define	CONSOLE_SYSLOG" > $@
+
+ipxe : $(IPXE_CONSOLE) $(IPXE_EFI)
 
 $(IPXE_EFI) : submodules
 	$(MAKE) -C $(IPXE_SRC) CROSS=$(IPXE_CROSS) CONFIG=rpi $(IPXE_TGT)
