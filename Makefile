@@ -13,6 +13,7 @@ IPXE_SRC	:= ipxe/src
 IPXE_TGT	:= bin-arm64-efi/snp.efi
 IPXE_EFI	:= $(IPXE_SRC)/$(IPXE_TGT)
 IPXE_CONSOLE    := $(IPXE_SRC)/config/local/rpi/console.h
+IPXE_GENERAL    := $(IPXE_SRC)/config/local/rpi/general.h
 
 all : tftpboot.zip
 
@@ -36,15 +37,19 @@ $(EFI_FD) : submodules efi-basetools
 	build -b $(EFI_BUILD) -a $(EFI_ARCH) -t $(EFI_TOOLCHAIN) \
 		-p $(EFI_DSC) $(EFI_FLAGS)
 
+$(IPXE_GENERAL) : submodules
+	mkdir -p $$(dirname $@) || true
+	echo "#define	DOWNLOAD_PROTO_HTTPS" > $@
+
 $(IPXE_CONSOLE) : submodules
 	mkdir -p $$(dirname $@) || true
 	echo "#undef	LOG_LEVEL" > $@
 	echo "#define	LOG_LEVEL LOG_ALL" >> $@
 	echo "#define	CONSOLE_SYSLOG CONSOLE_USAGE_LOG" >> $@
 
-ipxe : $(IPXE_CONSOLE) $(IPXE_EFI)
+ipxe : $(IPXE_EFI)
 
-$(IPXE_EFI) : submodules
+$(IPXE_EFI) : submodules $(IPXE_CONSOLE) $(IPXE_GENERAL)
 	$(MAKE) -C $(IPXE_SRC) CROSS=$(IPXE_CROSS) CONFIG=rpi $(IPXE_TGT)
 
 pxe : firmware efi ipxe
