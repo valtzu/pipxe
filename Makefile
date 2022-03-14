@@ -45,7 +45,7 @@ $(IPXE_CONSOLE) : submodules
 	mkdir -p $$(dirname $@) || true
 	echo "#undef	LOG_LEVEL" > $@
 	echo "#define	LOG_LEVEL LOG_ALL" >> $@
-	echo "#define	CONSOLE_SYSLOG CONSOLE_USAGE_LOG" >> $@
+	echo "#define	CONSOLE_SYSLOG CONSOLE_USAGE_ALL" >> $@
 
 ipxe : $(IPXE_EFI)
 
