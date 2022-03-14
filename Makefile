@@ -40,6 +40,7 @@ $(EFI_FD) : submodules efi-basetools
 $(IPXE_GENERAL) : submodules
 	mkdir -p $$(dirname $@) || true
 	echo "#define	DOWNLOAD_PROTO_HTTPS" > $@
+	echo "#define	NTP_CMD" >> $@
 
 $(IPXE_CONSOLE) : submodules
 	mkdir -p $$(dirname $@) || true
