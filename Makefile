@@ -64,6 +64,7 @@ pxe : firmware efi ipxe
 	cp config.txt $(EFI_FD) edk2/License.txt pxe/
 	mkdir -p pxe/efi/boot
 	cp $(IPXE_EFI) pxe/efi/boot/bootaa64.efi
+	cp ./autoexec.ipxe pxe/efi/boot/
 	cp ipxe/COPYING* pxe/
 
 tftpboot.zip : pxe

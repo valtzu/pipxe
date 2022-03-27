@@ -5,6 +5,7 @@ services:
     volumes:
       - ./dnsmasq.conf:/etc/dnsmasq.conf
       - ./tftpboot:/srv/tftpboot
+      - ./boot.ipxe:/srv/tftpboot/efi/boot/autoexec.ipxe
     network_mode: host
     entrypoint: []
     command: |

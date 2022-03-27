@@ -1,0 +1,11 @@
+#!ipxe
+dhcp
+
+# Required for TLS cert verification
+ntp pool.ntp.org
+
+set root-url http://github.com/valtzu/rpi-images/releases/latest/download
+set cloud-init https://raw.githubusercontent.com/valtzu/pipxe/master/example/cloud-init/
+initrd ${root-url}/initrd.img
+chain ${root-url}/vmlinuz initrd=initrd.img root=${root-url}/focal-minimal-cloudimg-arm64.tar.xz ip=dhcp overlayroot=tmpfs:recurse=0 network-config=disabled ds=nocloud-net;s=${cloud-init}
+boot
