@@ -17,7 +17,6 @@ RUN true \
     make \
     perl \
     python \
-    subversion \
     liblzma-dev \
     lzma-dev \
     uuid-dev \

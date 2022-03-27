@@ -1,4 +1,4 @@
-FW_URL		:= https://github.com/raspberrypi/firmware/branches/stable/boot
+FW_URL		:= https://raw.githubusercontent.com/raspberrypi/firmware/master/boot
 
 EFI_BUILD	:= RELEASE
 EFI_ARCH	:= AARCH64
@@ -15,7 +15,7 @@ IPXE_EFI	:= $(IPXE_SRC)/$(IPXE_TGT)
 IPXE_CONSOLE    := $(IPXE_SRC)/config/local/rpi/console.h
 IPXE_GENERAL    := $(IPXE_SRC)/config/local/rpi/general.h
 
-SDCARD_MB	:= 32
+SDCARD_MB	:= 8
 export MTOOLSRC	:= mtoolsrc
 
 all : tftpboot.zip boot.img
@@ -23,12 +23,11 @@ all : tftpboot.zip boot.img
 submodules :
 	git submodule update --init --recursive
 
-firmware :
-	if [ ! -e firmware ] ; then \
-		$(RM) -rf firmware-tmp ; \
-		svn export $(FW_URL) firmware-tmp && \
-		mv firmware-tmp firmware ; \
-	fi
+firmware : firmware/start4.elf firmware/fixup4.dat firmware/bcm2711-rpi-4-b.dtb firmware/overlays/overlay_map.dtb
+
+firmware/%:
+	[ -d $(shell dirname $@) ] || mkdir -p $(shell dirname $@)
+	wget -O $@ $(FW_URL)/$*
 
 efi : $(EFI_FD)
 
