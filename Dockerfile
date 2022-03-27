@@ -22,6 +22,13 @@ RUN true \
     lzma-dev \
     uuid-dev \
     zip \
+    wget \
+    && true
+
+# mtools version 4.0.32 in the ubuntu repo as of 2022-03-26 does not work, so let's download a working version manually
+RUN \
+    wget https://ftp.gnu.org/gnu/mtools/mtools_4.0.38_amd64.deb \
+    && dpkg -i mtools_4.0.38_amd64.deb \
     && true
 
 RUN mkdir -p /opt/build

@@ -44,3 +44,13 @@ jobs:
           asset_name: tftpboot.zip
           asset_path: tftpboot.zip
           asset_content_type: application/zip
+
+      - name: Upload (boot.img)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_name: boot.img
+          asset_path: boot.img
+          asset_content_type: application/octet-stream

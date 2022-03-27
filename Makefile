@@ -15,7 +15,10 @@ IPXE_EFI	:= $(IPXE_SRC)/$(IPXE_TGT)
 IPXE_CONSOLE    := $(IPXE_SRC)/config/local/rpi/console.h
 IPXE_GENERAL    := $(IPXE_SRC)/config/local/rpi/general.h
 
-all : tftpboot.zip
+SDCARD_MB	:= 32
+export MTOOLSRC	:= mtoolsrc
+
+all : tftpboot.zip boot.img
 
 submodules :
 	git submodule update --init --recursive
@@ -67,14 +70,20 @@ tftpboot.zip : pxe
 	$(RM) -f $@
 	( pushd $< ; zip -q -r ../$@ * ; popd )
 
+boot.img: pxe
+	truncate -s $(SDCARD_MB)M $@
+	mpartition -I -c -b 32 -s 32 -h 64 -t $(SDCARD_MB) -a "z:"
+	mformat -v "pipxe" "z:"
+	mcopy -s pxe/* "z:"
+
 update:
 	git submodule foreach git pull origin master
 
 tag :
-	git tag v`git show -s --format='%ad' --date=short | tr -d -`
+	git tag v`git show -s --format='%ad' --date=short | tr -d -`-rpi4
 
 .PHONY : submodules firmware efi efi-basetools $(EFI_FD) ipxe $(IPXE_EFI) pxe
 
 clean :
-	$(RM) -rf firmware Build pxe tftpboot.zip
+	$(RM) -rf firmware Build pxe tftpboot.zip boot.img
 	if [ -d $(IPXE_SRC) ] ; then $(MAKE) -C $(IPXE_SRC) clean ; fi
