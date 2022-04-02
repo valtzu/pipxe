@@ -39,7 +39,7 @@ Embedding iPXE script inside `boot.img` makes it possible to iPXE boot from inte
 
 ### Implementation
 
-1. Build `boot.img` with `docker-compose run --rm build make EMBED=$PWD/autoexec.ipxe` (or wherever your ipxe script is)
+1. Build `boot.img` with `docker-compose run --rm build make EMBED=/opt/build/autoexec.ipxe` (or wherever your ipxe script is)
 2. Create 2048-bit RSA key pair in PEM format (Google is your friend)
 3. Create `boot.sig` from `boot.img` with `rpi-eeprom-digest -i boot.img -o boot.sig -k your-private-key.pem`
 4. Copy `boot.img` to your HTTP server (you may need to also sign it with `rpi-eeprom-digest`)
