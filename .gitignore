@@ -4,3 +4,4 @@ pxe*
 .env
 tftpboot.zip
 boot.img
+Drivers/Ipxe/Ipxe.efi

@@ -5,12 +5,14 @@ EFI_ARCH	:= AARCH64
 EFI_TOOLCHAIN	:= GCC5
 EFI_TIMEOUT	:= 3
 EFI_FLAGS	:= --pcd=PcdPlatformBootTimeOut=$(EFI_TIMEOUT) --pcd=PcdRamLimitTo3GB=0 --pcd=PcdRamMoreThan3GB=1
-EFI_DSC		:= edk2-platforms/Platform/RaspberryPi/RPi4/RPi4.dsc
+EFI_SRC		:= edk2-platforms
+EFI_DSC		:= $(EFI_SRC)/Platform/RaspberryPi/RPi4/RPi4.dsc
+EFI_FDF		:= $(EFI_SRC)/Platform/RaspberryPi/RPi4/RPi4.fdf
 EFI_FD		:= Build/RPi4/$(EFI_BUILD)_$(EFI_TOOLCHAIN)/FV/RPI_EFI.fd
 
 IPXE_CROSS	:= aarch64-linux-gnu-
 IPXE_SRC	:= ipxe/src
-IPXE_TGT	:= bin-arm64-efi/snp.efi
+IPXE_TGT	:= bin-arm64-efi/ipxe.efidrv
 IPXE_EFI	:= $(IPXE_SRC)/$(IPXE_TGT)
 IPXE_CONSOLE    := $(IPXE_SRC)/config/local/rpi/console.h
 IPXE_GENERAL    := $(IPXE_SRC)/config/local/rpi/general.h
@@ -35,6 +37,9 @@ efi-basetools : submodules
 	$(MAKE) -C edk2/BaseTools
 
 $(EFI_FD) : submodules efi-basetools
+	cp -a ./Drivers/Ipxe $(EFI_SRC)/Drivers/
+	( grep 'Ipxe.inf' $(EFI_DSC) || sed 's@\[Components\.common\]@\0\n  Drivers/Ipxe/Ipxe.inf@' -i $(EFI_DSC) )
+	( grep 'Ipxe.inf' $(EFI_FDF) || sed 's@^\s*INF Platform/RaspberryPi/Drivers/LogoDxe/LogoDxe\.inf@  INF Drivers/Ipxe/Ipxe.inf\n\0@m' -i $(EFI_FDF) )
 	. ./edksetup.sh && \
 	build -b $(EFI_BUILD) -a $(EFI_ARCH) -t $(EFI_TOOLCHAIN) \
 		-p $(EFI_DSC) $(EFI_FLAGS)
@@ -54,6 +59,7 @@ ipxe : $(IPXE_EFI)
 
 $(IPXE_EFI) : submodules $(IPXE_CONSOLE) $(IPXE_GENERAL)
 	$(MAKE) -C $(IPXE_SRC) CROSS=$(IPXE_CROSS) CONFIG=rpi $(IPXE_TGT)
+	cp $(IPXE_SRC)/$(IPXE_TGT) ./Drivers/Ipxe/Ipxe.efi
 
 pxe : firmware efi ipxe
 	$(RM) -rf pxe
@@ -61,9 +67,6 @@ pxe : firmware efi ipxe
 	cp -r $(sort $(filter-out firmware/kernel%,$(wildcard firmware/*))) \
 		pxe/
 	cp config.txt $(EFI_FD) edk2/License.txt pxe/
-	mkdir -p pxe/efi/boot
-	cp $(IPXE_EFI) pxe/efi/boot/bootaa64.efi
-	cp ./autoexec.ipxe pxe/efi/boot/
 	cp ipxe/COPYING* pxe/
 
 tftpboot.zip : pxe
