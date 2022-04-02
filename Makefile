@@ -36,7 +36,7 @@ efi : $(EFI_FD)
 efi-basetools : submodules
 	$(MAKE) -C edk2/BaseTools
 
-$(EFI_FD) : submodules efi-basetools
+$(EFI_FD) : submodules efi-basetools $(IPXE_EFI)
 	cp -a ./Drivers/Ipxe $(EFI_SRC)/Drivers/
 	( grep 'Ipxe.inf' $(EFI_DSC) || sed 's@\[Components\.common\]@\0\n  Drivers/Ipxe/Ipxe.inf@' -i $(EFI_DSC) )
 	( grep 'Ipxe.inf' $(EFI_FDF) || sed 's@^\s*INF Platform/RaspberryPi/Drivers/LogoDxe/LogoDxe\.inf@  INF Drivers/Ipxe/Ipxe.inf\n\0@m' -i $(EFI_FDF) )
