@@ -25,6 +25,26 @@ cd pixpe
 docker-compose up 
 ```
 
+HTTP boot
+-----------------------------------------
+
+### Boot sequence
+1. EEPROM loads `http://your-server/net_install/boot.img` and verifies it against `http://your-server/net_install/boot.sig`
+2. `start4.elf` is launched (from `boot.img`)
+3. UEFI (`RPI_EFI.fd`) is launched (from `boot.img`), defined in `config.txt`: `armstub=RPI_EFI.fd`
+4. iPXE (embedded inside `RPI_EFI.fd` as EFI driver) is launched
+5. iPXE looks up `autoexec.ipxe` from SD card or from TFTP server (which may be resolved using DHCP) 
+
+Embedding iPXE script inside `boot.img` makes it possible to iPXE boot from internet, without SD card or TFTP server, eliminating step number 5 above.
+
+### Implementation
+
+1. Build `boot.img` with `docker-compose run --rm build make EMBED=$PWD/autoexec.ipxe` (or wherever your ipxe script is)
+2. Create 2048-bit RSA key pair in PEM format (Google is your friend)
+3. Create `boot.sig` from `boot.img` with `rpi-eeprom-digest -i boot.img -o boot.sig -k your-private-key.pem`
+4. Copy `boot.img` to your HTTP server (you may need to also sign it with `rpi-eeprom-digest`)
+5. Flash EEPROM with your public key, `BOOT_ORDER`, `HTTP_HOST` etc. – but note that `HTTP_PATH` does not work and is always `net_install` (2022-04-02). See official [docs on HTTP boot](https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#http-boot).
+
 Licence
 -------
 
