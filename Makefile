@@ -12,7 +12,7 @@ EFI_FD		:= Build/RPi4/$(EFI_BUILD)_$(EFI_TOOLCHAIN)/FV/RPI_EFI.fd
 
 IPXE_CROSS	:= aarch64-linux-gnu-
 IPXE_SRC	:= ipxe/src
-IPXE_TGT	:= bin-arm64-efi/ipxe.efidrv
+IPXE_TGT	:= bin-arm64-efi/snp.efi
 IPXE_EFI	:= $(IPXE_SRC)/$(IPXE_TGT)
 IPXE_CONSOLE    := $(IPXE_SRC)/config/local/rpi/console.h
 IPXE_GENERAL    := $(IPXE_SRC)/config/local/rpi/general.h
@@ -37,9 +37,11 @@ efi-basetools : submodules
 	$(MAKE) -C edk2/BaseTools
 
 $(EFI_FD) : submodules efi-basetools $(IPXE_EFI)
+ifeq '$(IPXE_TGT)' 'bin-arm64-efi/ipxe.efidrv'
 	cp -a ./Drivers/Ipxe $(EFI_SRC)/Drivers/
 	( grep 'Ipxe.inf' $(EFI_DSC) || sed 's@\[Components\.common\]@\0\n  Drivers/Ipxe/Ipxe.inf@' -i $(EFI_DSC) )
 	( grep 'Ipxe.inf' $(EFI_FDF) || sed 's@^\s*INF Platform/RaspberryPi/Drivers/LogoDxe/LogoDxe\.inf@  INF Drivers/Ipxe/Ipxe.inf\n\0@m' -i $(EFI_FDF) )
+endif
 	. ./edksetup.sh && \
 	build -b $(EFI_BUILD) -a $(EFI_ARCH) -t $(EFI_TOOLCHAIN) \
 		-p $(EFI_DSC) $(EFI_FLAGS)
@@ -59,7 +61,9 @@ ipxe : $(IPXE_EFI)
 
 $(IPXE_EFI) : submodules $(IPXE_CONSOLE) $(IPXE_GENERAL)
 	$(MAKE) -C $(IPXE_SRC) CROSS=$(IPXE_CROSS) CONFIG=rpi $(IPXE_TGT)
+ifeq '$(IPXE_TGT)' 'bin-arm64-efi/ipxe.efidrv'
 	cp $(IPXE_SRC)/$(IPXE_TGT) ./Drivers/Ipxe/Ipxe.efi
+endif
 
 pxe : firmware efi ipxe
 	$(RM) -rf pxe
@@ -67,6 +71,11 @@ pxe : firmware efi ipxe
 	cp -r $(sort $(filter-out firmware/kernel%,$(wildcard firmware/*))) \
 		pxe/
 	cp config.txt $(EFI_FD) edk2/License.txt pxe/
+	mkdir -p pxe/efi/boot
+ifneq '$(IPXE_TGT)' 'bin-arm64-efi/ipxe.efidrv'
+	cp $(IPXE_SRC)/$(IPXE_TGT) pxe/efi/boot/bootaa64.efi
+	cp ./autoexec.ipxe pxe/efi/boot/autoexec.ipxe
+endif
 	cp ipxe/COPYING* pxe/
 
 tftpboot.zip : pxe
@@ -77,7 +86,7 @@ boot.img: pxe
 	truncate -s $(SDCARD_MB)M $@
 	mpartition -I -c -b 32 -s 32 -h 64 -t $(SDCARD_MB) -a "z:"
 	mformat -v "pipxe" "z:"
-	mcopy -s pxe/* "z:"
+	mcopy -s $(sort $(filter-out pxe/efi%,$(wildcard pxe/*))) "z:"
 
 update:
 	git submodule foreach git pull origin master
