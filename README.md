@@ -45,6 +45,8 @@ Embedding iPXE script inside `boot.img` makes it possible to iPXE boot from inte
 4. Copy `boot.img` to your HTTP server (you may need to also sign it with `rpi-eeprom-digest`)
 5. Flash EEPROM with your public key, `BOOT_ORDER`, `HTTP_HOST` etc. – but note that `HTTP_PATH` does not work and is always `net_install` (2022-04-02). See official [docs on HTTP boot](https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#http-boot).
 
+All of the above is made easy with [valtzu/pipxe-http](https://github.com/valtzu/pipxe-http).
+
 Licence
 -------
 
