@@ -1,5 +1,6 @@
 FW_URL		:= https://raw.githubusercontent.com/raspberrypi/firmware/master/boot
 
+SHELL	= /bin/bash
 EFI_BUILD	:= RELEASE
 EFI_ARCH	:= AARCH64
 EFI_TOOLCHAIN	:= GCC5
@@ -23,7 +24,7 @@ export MTOOLSRC	:= mtoolsrc
 all : tftpboot.zip boot.img
 
 submodules :
-	git submodule update --init --recursive
+	which git && git submodule update --init --recursive || true
 
 firmware : firmware/start4.elf firmware/fixup4.dat firmware/bcm2711-rpi-4-b.dtb firmware/overlays/overlay_map.dtb
 
