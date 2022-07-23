@@ -1,4 +1,4 @@
-FROM ubuntu:21.10
+FROM ubuntu:22.04
 
 RUN true \
     && apt-get update \
@@ -16,7 +16,7 @@ RUN true \
     iasl \
     make \
     perl \
-    python \
+    python-is-python3 \
     liblzma-dev \
     lzma-dev \
     uuid-dev \
