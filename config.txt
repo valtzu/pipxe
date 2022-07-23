@@ -4,3 +4,7 @@ boot_delay=0
 enable_uart=1
 hdmi_force_hotplug=1
 hdmi_safe=1
+enable_gic=1
+disable_commandline_tags=2
+device_tree_address=0x1f0000
+device_tree_end=0x200000
