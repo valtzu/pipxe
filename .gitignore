@@ -5,3 +5,4 @@ pxe*
 tftpboot.zip
 boot.img
 Drivers/Ipxe/Ipxe.efi
+.idea
