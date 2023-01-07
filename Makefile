@@ -72,8 +72,8 @@ pxe : firmware efi ipxe
 	cp -r $(sort $(filter-out firmware/kernel%,$(wildcard firmware/*))) \
 		pxe/
 	cp config.txt $(EFI_FD) edk2/License.txt pxe/
-	mkdir -p pxe/efi/boot
 ifneq '$(IPXE_TGT)' 'bin-arm64-efi/ipxe.efidrv'
+	mkdir -p pxe/efi/boot
 	cp $(IPXE_SRC)/$(IPXE_TGT) pxe/efi/boot/bootaa64.efi
 	cp ./autoexec.ipxe pxe/efi/boot/autoexec.ipxe
 endif
