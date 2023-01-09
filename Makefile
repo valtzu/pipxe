@@ -1,12 +1,12 @@
 FW_URL		:= https://raw.githubusercontent.com/raspberrypi/firmware/master/boot
 
 SHELL	= /bin/bash
-EFI_IPXE_DRIVER_ENABLE := FALSE
+EFI_IPXE_DRIVER := FALSE
 EFI_BUILD	:= RELEASE
 EFI_ARCH	:= AARCH64
 EFI_TOOLCHAIN	:= GCC5
 EFI_TIMEOUT	:= 0
-EFI_FLAGS	:= --pcd=PcdPlatformBootTimeOut=$(EFI_TIMEOUT) --pcd=PcdRamLimitTo3GB=0 --pcd=PcdRamMoreThan3GB=1 --pcd=PcdSystemTableMode=2 -D IPXE_DRIVER_ENABLE=$(EFI_IPXE_DRIVER_ENABLE)
+EFI_FLAGS	:= --pcd=PcdPlatformBootTimeOut=$(EFI_TIMEOUT) --pcd=PcdRamLimitTo3GB=0 --pcd=PcdRamMoreThan3GB=1 --pcd=PcdSystemTableMode=2 -D IPXE_DRIVER_ENABLE=$(EFI_IPXE_DRIVER)
 EFI_SRC		:= edk2-platforms
 EFI_DSC		:= $(EFI_SRC)/Platform/RaspberryPi/RPi4/RPi4.dsc
 EFI_FDF		:= $(EFI_SRC)/Platform/RaspberryPi/RPi4/RPi4.fdf
@@ -14,7 +14,11 @@ EFI_FD		:= Build/RPi4/$(EFI_BUILD)_$(EFI_TOOLCHAIN)/FV/RPI_EFI.fd
 
 IPXE_CROSS	:= aarch64-linux-gnu-
 IPXE_SRC	:= ipxe/src
+ifeq '$(EFI_IPXE_DRIVER)' 'TRUE'
+IPXE_TGT	:= bin-arm64-efi/ipxe.efidrv
+else
 IPXE_TGT	:= bin-arm64-efi/snp.efi
+endif
 IPXE_EFI	:= $(IPXE_SRC)/$(IPXE_TGT)
 IPXE_CONSOLE    := $(IPXE_SRC)/config/local/rpi/console.h
 IPXE_GENERAL    := $(IPXE_SRC)/config/local/rpi/general.h
@@ -58,7 +62,7 @@ ipxe : $(IPXE_EFI)
 
 $(IPXE_EFI) : submodules $(IPXE_CONSOLE) $(IPXE_GENERAL)
 	$(MAKE) -C $(IPXE_SRC) CROSS=$(IPXE_CROSS) CONFIG=rpi $(IPXE_TGT)
-ifeq '$(IPXE_TGT)' 'bin-arm64-efi/ipxe.efidrv'
+ifeq '$(EFI_IPXE_DRIVER)' 'TRUE'
 	cp $(IPXE_SRC)/$(IPXE_TGT) $(EFI_SRC)/Drivers/Ipxe/Ipxe.efi
 endif
 
@@ -68,7 +72,7 @@ pxe : firmware efi ipxe
 	cp -r $(sort $(filter-out firmware/kernel%,$(wildcard firmware/*))) \
 		pxe/
 	cp config.txt $(EFI_FD) edk2/License.txt pxe/
-ifneq '$(IPXE_TGT)' 'bin-arm64-efi/ipxe.efidrv'
+ifneq '$(EFI_IPXE_DRIVER)' 'TRUE'
 	mkdir -p pxe/efi/boot
 	cp $(IPXE_SRC)/$(IPXE_TGT) pxe/efi/boot/bootaa64.efi
 	cp ./autoexec.ipxe pxe/efi/boot/autoexec.ipxe
