@@ -19,9 +19,9 @@ index 0000000000..9c5df7714d
 +  VERSION_STRING                 = 1.0
 +
 +[Binaries.AARCH64]
-+  PE32|Ipxe.efi
++  PE32|Drivers/Ipxe/Ipxe.efi|*
 diff --git a/Platform/RaspberryPi/RPi4/RPi4.dsc b/Platform/RaspberryPi/RPi4/RPi4.dsc
-index 8ba0ca6185..5b58910567 100644
+index 8ba0ca6185..a938608abb 100644
 --- a/Platform/RaspberryPi/RPi4/RPi4.dsc
 +++ b/Platform/RaspberryPi/RPi4/RPi4.dsc
 @@ -32,6 +32,7 @@
@@ -32,17 +32,20 @@ index 8ba0ca6185..5b58910567 100644
  
  !ifndef TFA_BUILD_ARTIFACTS
    #
-@@ -795,3 +796,10 @@
-       gEfiShellPkgTokenSpaceGuid.PcdShellLibAutoInitialize|FALSE
-   }
- !endif
-+
+@@ -593,6 +594,13 @@
+ #
+ ################################################################################
+ [Components.common]
 +!if $(IPXE_DRIVER_ENABLE) == TRUE
 +  #
 +  # iPXE Driver
 +  #
 +  Drivers/Ipxe/Ipxe.inf
 +!endif
++
+   #
+   # PEI Phase modules
+   #
 diff --git a/Platform/RaspberryPi/RPi4/RPi4.fdf b/Platform/RaspberryPi/RPi4/RPi4.fdf
 index 0c782d2f35..ec6091d855 100644
 --- a/Platform/RaspberryPi/RPi4/RPi4.fdf
