@@ -24,7 +24,7 @@ export MTOOLSRC	:= mtoolsrc
 all : tftpboot.zip boot.img
 
 submodules :
-	which git && git submodule update --init --recursive || true
+	which git && git submodule update --init --recursive && ./apply_patches.sh || true
 
 firmware : firmware/start4.elf firmware/fixup4.dat firmware/bcm2711-rpi-4-b.dtb firmware/overlays/overlay_map.dtb
 
