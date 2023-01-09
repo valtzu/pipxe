@@ -1,0 +1,63 @@
+diff --git a/Drivers/Ipxe/.gitignore b/Drivers/Ipxe/.gitignore
+new file mode 100644
+index 0000000000..a93b09a019
+--- /dev/null
++++ b/Drivers/Ipxe/.gitignore
+@@ -0,0 +1 @@
++Ipxe.efi
+diff --git a/Drivers/Ipxe/Ipxe.inf b/Drivers/Ipxe/Ipxe.inf
+new file mode 100644
+index 0000000000..9c5df7714d
+--- /dev/null
++++ b/Drivers/Ipxe/Ipxe.inf
+@@ -0,0 +1,9 @@
++[Defines]
++  INF_VERSION                    = 0x0001001B
++  BASE_NAME                      = Ipxe
++  FILE_GUID                      = EC60E14E-F6C6-4648-BEF7-057AC415E30B
++  MODULE_TYPE                    = UEFI_DRIVER
++  VERSION_STRING                 = 1.0
++
++[Binaries.AARCH64]
++  PE32|Ipxe.efi
+diff --git a/Platform/RaspberryPi/RPi4/RPi4.dsc b/Platform/RaspberryPi/RPi4/RPi4.dsc
+index 8ba0ca6185..5b58910567 100644
+--- a/Platform/RaspberryPi/RPi4/RPi4.dsc
++++ b/Platform/RaspberryPi/RPi4/RPi4.dsc
+@@ -32,6 +32,7 @@
+   DEFINE SECURE_BOOT_ENABLE      = FALSE
+   DEFINE INCLUDE_TFTP_COMMAND    = FALSE
+   DEFINE DEBUG_PRINT_ERROR_LEVEL = 0x8000004F
++  DEFINE IPXE_DRIVER_ENABLE      = FALSE
+ 
+ !ifndef TFA_BUILD_ARTIFACTS
+   #
+@@ -795,3 +796,10 @@
+       gEfiShellPkgTokenSpaceGuid.PcdShellLibAutoInitialize|FALSE
+   }
+ !endif
++
++!if $(IPXE_DRIVER_ENABLE) == TRUE
++  #
++  # iPXE Driver
++  #
++  Drivers/Ipxe/Ipxe.inf
++!endif
+diff --git a/Platform/RaspberryPi/RPi4/RPi4.fdf b/Platform/RaspberryPi/RPi4/RPi4.fdf
+index 0c782d2f35..ec6091d855 100644
+--- a/Platform/RaspberryPi/RPi4/RPi4.fdf
++++ b/Platform/RaspberryPi/RPi4/RPi4.fdf
+@@ -314,6 +314,13 @@ READ_LOCK_STATUS   = TRUE
+   #
+   INF Platform/RaspberryPi/Drivers/LogoDxe/LogoDxe.inf
+ 
++!if $(IPXE_DRIVER_ENABLE) == TRUE
++  #
++  # iPXE Driver
++  #
++  INF Drivers/Ipxe/Ipxe.inf
++!endif
++
+ [FV.FVMAIN_COMPACT]
+ FvAlignment        = 16
+ ERASE_POLARITY     = 1

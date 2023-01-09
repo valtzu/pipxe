@@ -1,11 +1,12 @@
 FW_URL		:= https://raw.githubusercontent.com/raspberrypi/firmware/master/boot
 
 SHELL	= /bin/bash
+EFI_IPXE_DRIVER_ENABLE := FALSE
 EFI_BUILD	:= RELEASE
 EFI_ARCH	:= AARCH64
 EFI_TOOLCHAIN	:= GCC5
 EFI_TIMEOUT	:= 0
-EFI_FLAGS	:= --pcd=PcdPlatformBootTimeOut=$(EFI_TIMEOUT) --pcd=PcdRamLimitTo3GB=0 --pcd=PcdRamMoreThan3GB=1 --pcd=PcdSystemTableMode=2
+EFI_FLAGS	:= --pcd=PcdPlatformBootTimeOut=$(EFI_TIMEOUT) --pcd=PcdRamLimitTo3GB=0 --pcd=PcdRamMoreThan3GB=1 --pcd=PcdSystemTableMode=2 -D IPXE_DRIVER_ENABLE=$(EFI_IPXE_DRIVER_ENABLE)
 EFI_SRC		:= edk2-platforms
 EFI_DSC		:= $(EFI_SRC)/Platform/RaspberryPi/RPi4/RPi4.dsc
 EFI_FDF		:= $(EFI_SRC)/Platform/RaspberryPi/RPi4/RPi4.fdf
@@ -38,11 +39,6 @@ efi-basetools : submodules
 	$(MAKE) -C edk2/BaseTools
 
 $(EFI_FD) : submodules efi-basetools $(IPXE_EFI)
-ifeq '$(IPXE_TGT)' 'bin-arm64-efi/ipxe.efidrv'
-	cp -a ./Drivers/Ipxe $(EFI_SRC)/Drivers/
-	( grep 'Ipxe.inf' $(EFI_DSC) || sed 's@\[Components\.common\]@\0\n  Drivers/Ipxe/Ipxe.inf@' -i $(EFI_DSC) )
-	( grep 'Ipxe.inf' $(EFI_FDF) || sed 's@^\s*INF Platform/RaspberryPi/Drivers/LogoDxe/LogoDxe\.inf@  INF Drivers/Ipxe/Ipxe.inf\n\0@m' -i $(EFI_FDF) )
-endif
 	. ./edksetup.sh && \
 	build -b $(EFI_BUILD) -a $(EFI_ARCH) -t $(EFI_TOOLCHAIN) \
 		-p $(EFI_DSC) $(EFI_FLAGS)
@@ -63,7 +59,7 @@ ipxe : $(IPXE_EFI)
 $(IPXE_EFI) : submodules $(IPXE_CONSOLE) $(IPXE_GENERAL)
 	$(MAKE) -C $(IPXE_SRC) CROSS=$(IPXE_CROSS) CONFIG=rpi $(IPXE_TGT)
 ifeq '$(IPXE_TGT)' 'bin-arm64-efi/ipxe.efidrv'
-	cp $(IPXE_SRC)/$(IPXE_TGT) ./Drivers/Ipxe/Ipxe.efi
+	cp $(IPXE_SRC)/$(IPXE_TGT) $(EFI_SRC)/Drivers/Ipxe/Ipxe.efi
 endif
 
 pxe : firmware efi ipxe
